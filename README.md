@@ -23,12 +23,14 @@
     $ python jawikicorpus.py jawiki-latest-pages-articles.xml.bz2 jawiki 
     ```
     数時間待つ...  
+    
     [!] もし，実行時にエラー`ImportError: No module named maxentropy`が出る場合，以下ファイルを修正し，上コマンドを再度実行します．
     また，ファイルパスは環境に応じて読み替えてください．
     * matutils.py に以下を追記  
         ```bash
         $ vim ~/.anyenv/envs/pyenv/versions/2.7.1/lib/python2.7/site-packages/gensim/matutils.py
         ```
+        
         ```python
         # append this
         def logsumexp(a):
@@ -36,10 +38,12 @@
             a_max = a.max()
             return a_max + log((exp(a-a_max)).sum())
         ```
+        
     * ldamodel.py を修正  
         ```bash
         $ vim ~/.anyenv/envs/pyenv/versions/2.7.1/lib/python2.7/site-packages/gensim/models/ldamodel.py
         ```
+        
         ```diff
         -from scipy.maxentropy import logsumexp # log(sum(exp(x))) that tries to avoid overflow
         +from gensim.matutils import logsumexp
@@ -56,36 +60,42 @@
 
 ### インデックス作成手順  
 用途に合わせて各種インデックス作成します．  
+
 * TF-IDFインデックス作成  
-    インデックス作成  
+    インデックス作成します．  
     ```bash
     $ python ./mk_tfidf_index.py
     ```
-    pythonからインデックスをロード  
+    
+    pythonからインデックスをロードします．  
     ```python
     import gensim
     dictionary = gensim.corpora.Dictionary.loadFromText('jawiki_wordids.txt')
     tfidf_index = gensim.similarities.SparseMatrixSimilarity.load('jawiki_tfidf_wimilarity.index')
     ```
+
 * LSI作成  
-    インデックス作成  
+    インデックス作成します．  
     [!] トピック数（潜在空間における次元数）は300としています．  
     ```bash
     $ python ./mk_latent_semantic_index.py
     ```
-    pythonからインデックスをロード  
+    
+    pythonからインデックスをロードします．  
     ```python
     import gensim
     dictionary = gensim.corpora.Dictionary.loadFromText('jawiki_wordids.txt')
     lsi = gensim.models.LsiModel.load('jawiki_lsi_topics300.model')
     ```
+    
 * LDAモデル作成  
-    インデックス作成  
+    インデックス作成します．  
     [!] トピック数は300としています．  
     ```bash
     $ python ./mk_latent_dirichlet_allocation_index.py
     ```
-    pythonからモデルをロード  
+    
+    pythonからモデルをロードします．  
     ```python
     import gensim
     dictionary = gensim.corpora.Dictionary.loadFromText('jawiki_wordids.txt')
